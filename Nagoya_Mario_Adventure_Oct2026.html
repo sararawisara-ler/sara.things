@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Super Nagoya Adventure — 29 Oct to 4 Nov 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#5C94FC;
+    --sky-dark:#2A4FB0;
+    --mario-red:#E52521;
+    --mario-red-dark:#9c1a17;
+    --mario-blue:#049CD8;
+    --gold:#FBD000;
+    --gold-dark:#c89a00;
+    --pipe:#00A14B;
+    --pipe-dark:#00712f;
+    --brick:#C84C0C;
+    --brick-dark:#8a3208;
+    --black:#1c1c1c;
+    --cream:#fdf6e3;
+    --ink:#2b2622;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--sky);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    overflow-x:hidden;
+    max-width:480px;
+    margin:0 auto;
+    box-shadow:0 0 30px rgba(0,0,0,0.3);
+  }
+  .pixel{font-family:'Press Start 2P',monospace;}
+  img{max-width:100%;display:block;}
+
+  /* clouds */
+  .clouds{position:relative;height:46px;overflow:hidden;background:var(--sky);}
+  .cloud{position:absolute;background:#fff;border-radius:50%;opacity:.9;}
+  .clouds::before, .clouds::after{
+    content:"";position:absolute;background:#fff;border-radius:50%;
+  }
+  .clouds::before{width:50px;height:26px;top:10px;left:10%;box-shadow:30px 6px 0 0 #fff, -20px 8px 0 -4px #fff;}
+  .clouds::after{width:40px;height:22px;top:14px;left:65%;box-shadow:25px 4px 0 -2px #fff;}
+
+  /* COVER */
+  #cover{
+    background:linear-gradient(180deg,var(--sky) 0%, var(--sky-dark) 100%);
+    padding:30px 20px 36px;
+    text-align:center;
+    position:relative;
+  }
+  #cover h1.pixel{
+    color:var(--gold);
+    font-size:22px;
+    line-height:1.6;
+    text-shadow:3px 3px 0 var(--mario-red-dark), -1px -1px 0 #000;
+    margin:18px 0 6px;
+  }
+  #cover .sub{color:#fff;font-size:13px;margin-bottom:18px;text-shadow:1px 1px 0 #000;}
+  .coin-row{display:flex;justify-content:center;gap:10px;margin:14px 0;font-size:22px;}
+  .players{
+    display:flex;justify-content:center;gap:14px;margin:18px 0;
+  }
+  .player-tag{
+    background:#fff;border:3px solid var(--black);border-radius:10px;
+    padding:8px 14px;font-size:11px;font-weight:700;
+  }
+  .player-tag.p1{color:var(--mario-red);}
+  .player-tag.p2{color:var(--pipe);}
+  .start-pill{
+    display:inline-block;margin-top:10px;background:var(--gold);color:var(--black);
+    border:3px solid var(--black);border-radius:30px;padding:10px 22px;font-size:11px;
+    box-shadow:0 4px 0 var(--gold-dark);
+  }
+  .pixel-small{font-family:'Press Start 2P',monospace;font-size:10px;}
+
+  /* WORLD MAP NAV */
+  #worldmap{background:var(--cream);padding:24px 16px 30px;}
+  #worldmap h2.pixel{font-size:14px;color:var(--mario-red);text-align:center;margin-bottom:18px;}
+  .map-path{position:relative;padding-left:6px;}
+  .map-node{
+    display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);
+    background:#fff;border:3px solid var(--black);border-radius:14px;padding:10px 14px;
+    margin-bottom:14px;position:relative;box-shadow:0 4px 0 rgba(0,0,0,0.2);
+  }
+  .map-node .node-num{
+    width:38px;height:38px;border-radius:50%;background:var(--mario-red);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:'Press Start 2P';font-size:13px;
+    border:3px solid var(--black);flex-shrink:0;
+  }
+  .map-node.castle .node-num{background:var(--black);}
+  .map-node .node-text b{display:block;font-size:13px;color:var(--mario-blue);}
+  .map-node .node-text span{font-size:11.5px;color:#665;}
+
+  /* WORLD SECTION HEADER */
+  .world{background:var(--cream);}
+  .world-header{
+    background:var(--black);
+    color:#fff;
+    padding:22px 18px;
+    position:relative;
+    border-bottom:6px solid var(--gold);
+  }
+  .world-header .tag.pixel{font-size:11px;color:var(--gold);margin-bottom:8px;}
+  .world-header h2{margin:0 0 4px;font-size:19px;color:#fff;}
+  .world-header .meta{font-size:12px;color:#cfcfcf;}
+  .world-body{padding:18px 16px 8px;}
+
+  /* route box */
+  .route-box{
+    background:#fff7e0;border:3px dashed var(--brick);border-radius:10px;
+    padding:14px 16px;font-size:13.5px;line-height:1.6;margin-bottom:18px;color:#3a3530;
+  }
+  .route-box .rlabel{font-weight:800;color:var(--mario-red);display:block;margin-bottom:5px;font-size:12px;text-transform:uppercase;letter-spacing:.4px;}
+
+  /* ALERT BLOCK - Mario warning */
+  .alert{
+    background:repeating-linear-gradient(45deg, var(--mario-red), var(--mario-red) 10px, var(--gold) 10px, var(--gold) 20px);
+    border:3px solid var(--black);border-radius:8px;padding:4px;margin-bottom:18px;
+  }
+  .alert-inner{
+    background:var(--black);color:#fff;border-radius:5px;padding:12px 14px;
+  }
+  .alert-inner .alert-title{
+    font-family:'Press Start 2P';font-size:11px;color:var(--gold);display:flex;align-items:center;gap:6px;margin-bottom:6px;
+  }
+  .alert-inner p{margin:0;font-size:12.5px;line-height:1.55;color:#f2f2f2;}
+  .alert-inner b{color:var(--gold);}
+
+  .boss-alert .alert-inner{background:var(--mario-red-dark);}
+  .boss-alert{background:repeating-linear-gradient(45deg, var(--black), var(--black) 10px, var(--mario-red) 10px, var(--mario-red) 20px);}
+
+  /* place card */
+  .level-card{
+    background:#fff;border:3px solid var(--black);border-radius:12px;overflow:hidden;
+    margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,0.15);
+  }
+  .level-card .lc-img{width:100%;height:150px;object-fit:cover;background:var(--gold);}
+  .lc-icon{
+    width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:52px;
+    background:linear-gradient(135deg,var(--mario-blue),var(--sky-dark));
+  }
+  .lc-body{padding:12px 14px 14px;}
+  .lc-body h4{margin:0 0 4px;font-size:14.5px;color:var(--mario-blue);}
+  .lc-body p{margin:0 0 10px;font-size:12.5px;color:#5b5346;line-height:1.5;}
+  .pipe-btn{
+    display:inline-flex;align-items:center;gap:6px;background:var(--pipe);color:#fff;
+    text-decoration:none;font-size:11.5px;font-weight:700;padding:9px 14px;border-radius:8px;
+    border:2px solid var(--pipe-dark);box-shadow:0 3px 0 var(--pipe-dark);
+  }
+  .pipe-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--pipe-dark);}
+
+  .tag-chip{
+    display:inline-block;background:var(--gold);color:var(--black);font-size:10.5px;font-weight:800;
+    padding:3px 9px;border-radius:12px;margin-bottom:8px;border:1px solid var(--gold-dark);
+  }
+  .tag-chip.opt{background:#ddd;}
+
+  /* budget / inventory table */
+  .coin-table{width:100%;border-collapse:collapse;background:#fff;border:3px solid var(--black);border-radius:10px;overflow:hidden;}
+  .coin-table th,.coin-table td{padding:10px 12px;font-size:12.5px;text-align:left;border-bottom:2px solid #eee2d3;}
+  .coin-table th{background:var(--mario-blue);color:#fff;font-size:11px;}
+  .coin-table td.amt,.coin-table th.amt{text-align:right;}
+  .coin-table tr.total td{font-weight:800;background:#fff7cf;border-top:3px solid var(--gold-dark);font-size:13.5px;}
+  .coin-table tr.range td{font-style:italic;color:#7a6e57;font-size:11.5px;border-bottom:none;}
+
+  /* immigration mini-table */
+  .immi-wrap{margin-bottom:18px;border:3px solid var(--black);border-radius:10px;overflow:hidden;}
+  .immi-head{
+    background:var(--mario-blue);color:#fff;font-family:'Press Start 2P';font-size:10px;
+    padding:8px 10px;display:flex;align-items:center;gap:6px;
+  }
+  .immi-table{width:100%;border-collapse:collapse;background:#fff;}
+  .immi-table td{padding:8px 10px;font-size:12px;border-bottom:1px solid #eee2d3;color:#3a3530;line-height:1.5;}
+  .immi-table tr:last-child td{border-bottom:none;}
+  .immi-table td.step{font-weight:800;color:var(--mario-red);width:34%;white-space:nowrap;vertical-align:top;}
+  .immi-table.na td{color:#8a8070;font-style:italic;}
+
+  .checklist{list-style:none;padding:0;margin:0;}
+  .checklist li{
+    background:#fff;border:2px solid var(--black);border-radius:8px;padding:10px 12px;margin-bottom:8px;
+    font-size:12.5px;display:flex;justify-content:space-between;gap:8px;align-items:center;
+  }
+  .status-pill{font-size:10px;font-weight:800;padding:4px 9px;border-radius:10px;white-space:nowrap;}
+  .status-paid{background:var(--pipe);color:#fff;}
+  .status-todo{background:var(--mario-red);color:#fff;}
+  .status-note{background:var(--gold);color:var(--black);}
+
+  .section-title.pixel{font-size:13px;color:var(--mario-red);margin:6px 0 14px;text-align:center;}
+
+  /* plain official-looking table, for showing to immigration */
+  .plain-table{width:100%;border-collapse:collapse;background:#fff;border:2px solid var(--black);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+  .plain-table th,.plain-table td{padding:9px 10px;font-size:12px;text-align:left;border:1px solid #ccc;line-height:1.45;vertical-align:top;}
+  .plain-table th{background:var(--black);color:#fff;font-size:11px;}
+  .plain-table td.dt{white-space:nowrap;font-weight:700;}
+  .immi-summary-box{background:#fff;border:3px solid var(--black);border-radius:10px;padding:14px;margin-bottom:16px;}
+  .immi-summary-box h4{margin:0 0 8px;font-size:13px;color:var(--mario-blue);}
+  .immi-summary-box p{margin:0 0 4px;font-size:12.5px;color:#3a3530;line-height:1.5;}
+
+  footer.world-footer{background:var(--black);color:#cfcfcf;text-align:center;padding:30px 18px;font-size:12px;}
+  footer .pixel{font-size:11px;color:var(--gold);margin-bottom:10px;}
+  .credit{font-size:10.5px;color:#9b9385;margin-top:10px;line-height:1.6;}
+
+  /* sticky bottom coin nav */
+  #coinNav{
+    position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+    width:100%;max-width:480px;background:var(--black);border-top:4px solid var(--gold);
+    display:flex;overflow-x:auto;padding:8px 6px;gap:6px;z-index:99;
+  }
+  #coinNav a{
+    flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--mario-red);
+    color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;
+    font-family:'Press Start 2P';font-size:11px;border:2px solid var(--gold);
+  }
+  body{padding-bottom:54px;}
+
+  @media (max-width:380px){
+    #cover h1.pixel{font-size:18px;}
+    .world-header h2{font-size:17px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<section id="cover">
+  <div class="clouds"></div>
+  <div class="pixel-small" style="color:#fff;">★ ★ ★ A NEW QUEST BEGINS ★ ★ ★</div>
+  <h1 class="pixel">SUPER<br>NAGOYA<br>ADVENTURE</h1>
+  <div class="sub">Nagoya · Takayama · Shirakawa-go · Kamikochi · Nintendo Museum</div>
+  <div class="coin-row">🍄 ⭐ 🪙 🎮 🏯</div>
+  <div class="players">
+    <div class="player-tag p1">🔴 PLAYER 1</div>
+    <div class="player-tag p2">🟢 PLAYER 2</div>
+  </div>
+  <div class="pixel-small" style="color:#fff;">29 OCT – 4 NOV 2026 · 7 DAYS</div>
+  <a href="#world1" class="start-pill pixel-small">▶ PRESS START</a>
+</section>
+
+<!-- WORLD MAP / LEVEL SELECT -->
+<section id="worldmap">
+  <h2 class="pixel">— WORLD MAP —</h2>
+  <div class="map-path">
+    <a class="map-node" href="#world1"><span class="node-num">1-1</span><span class="node-text"><b>Arrival · Easy Tourism</b><span>29 Oct · Nagoya</span></span></a>
+    <a class="map-node" href="#world2"><span class="node-num">1-2</span><span class="node-text"><b>Matcha Run + Nintendo</b><span>30 Oct · Kyoto - Uji</span></span></a>
+    <a class="map-node" href="#world3"><span class="node-num">1-3</span><span class="node-text"><b>Ghibli Park</b><span>31 Oct · Aichi (Premium)</span></span></a>
+    <a class="map-node" href="#world4"><span class="node-num">1-4</span><span class="node-text"><b>Kamikochi Hike</b><span>1 Nov · Nagano Alps</span></span></a>
+    <a class="map-node" href="#world5"><span class="node-num">1-5</span><span class="node-text"><b>Takayama + Shirakawa-go</b><span>2 Nov · Gifu</span></span></a>
+    <a class="map-node" href="#world6"><span class="node-num">1-6</span><span class="node-text"><b>Shopping Day</b><span>3 Nov · Nagoya AEON</span></span></a>
+    <a class="map-node castle" href="#world7"><span class="node-num">👑</span><span class="node-text"><b>FINAL BOSS: Departure</b><span>4 Nov · Centrair Airport</span></span></a>
+    <a class="map-node castle" href="#bonus"><span class="node-num">🛍️</span><span class="node-text"><b>Bonus Stage: Shopping Guide</b><span>Skincare · Vitamins · Snacks</span></span></a>
+    <a class="map-node castle" href="#inventory"><span class="node-num">🪙</span><span class="node-text"><b>Inventory: Budget & Checklist</b><span>Costs + book-by dates</span></span></a>
+    <a class="map-node castle" href="#immisummary"><span class="node-num">🛂</span><span class="node-text"><b>Immigration Summary</b><span>Plain itinerary to show officers</span></span></a>
+  </div>
+</section>
+
+<!-- ============ IMMIGRATION SUMMARY (plain, printable) ============ -->
+<section class="world" id="immisummary">
+  <div class="world-header" style="background:#1d3a6e;">
+    <div class="tag pixel">🛂 FOR IMMIGRATION</div>
+    <h2>Trip Summary</h2>
+    <div class="meta">Plain itinerary — show this page if asked at the counter</div>
+  </div>
+  <div class="world-body">
+
+    <div class="immi-summary-box">
+      <h4>Traveler Group</h4>
+      <p>2 travelers, traveling together for the whole trip.</p>
+    </div>
+
+    <div class="immi-summary-box">
+      <h4>Flights</h4>
+      <p><b>Arrival:</b> TG644, Bangkok (BKK) → Chubu Centrair (NGO), departs 00:05, lands 7:30 AM, 29 Oct 2026.</p>
+      <p><b>Departure:</b> TG645, Chubu Centrair (NGO) → Bangkok (BKK), departs 11:00 AM, 4 Nov 2026.</p>
+    </div>
+
+    <div class="immi-summary-box">
+      <h4>Accommodation (entire stay)</h4>
+      <p><b>ibis Styles Nagoya</b> — 6 nights, 29 Oct to 4 Nov 2026.</p>
+      <p>4-22-24 Meieki, Nakamura-ku, Nagoya 450-0002, Japan</p>
+      <p>Tel: +81 52-571-0571</p>
+    </div>
+
+    <h4 class="section-title pixel" style="margin-top:18px;">— DAY-BY-DAY PLAN —</h4>
+    <table class="plain-table">
+      <tr><th>Date</th><th>Plan</th><th>Overnight</th></tr>
+      <tr><td class="dt">29 Oct (Thu)</td><td>Arrive Centrair 7:30 AM → Nagoya city, sightseeing &amp; dinner</td><td>ibis Styles Nagoya</td></tr>
+      <tr><td class="dt">30 Oct (Fri)</td><td>Day trip to Kyoto / Uji — tea shops, Nintendo Museum</td><td>ibis Styles Nagoya</td></tr>
+      <tr><td class="dt">31 Oct (Sat)</td><td>Day trip to Ghibli Park, Aichi Prefecture</td><td>ibis Styles Nagoya</td></tr>
+      <tr><td class="dt">1 Nov (Sun)</td><td>Day trip — Kamikochi hiking tour, Nagano Alps</td><td>ibis Styles Nagoya</td></tr>
+      <tr><td class="dt">2 Nov (Mon)</td><td>Day trip — Takayama &amp; Shirakawa-go, Gifu Prefecture</td><td>ibis Styles Nagoya</td></tr>
+      <tr><td class="dt">3 Nov (Tue)</td><td>Free day in Nagoya — shopping</td><td>ibis Styles Nagoya</td></tr>
+      <tr><td class="dt">4 Nov (Wed)</td><td>Check out, depart Centrair 11:00 AM, return to Bangkok</td><td>—</td></tr>
+    </table>
+
+    <div class="immi-summary-box" style="margin-top:16px;">
+      <h4>Purpose of Visit</h4>
+      <p>Tourism only.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD 1-1 ============ -->
+<section class="world" id="world1">
+  <div class="world-header">
+    <div class="tag pixel">WORLD 1-1</div>
+    <h2>Arrival Day — Easy Tourism</h2>
+    <div class="meta">THU 29 OCT 2026 · Nagoya</div>
+  </div>
+  <div class="world-body">
+    <div class="route-box">
+      <span class="rlabel">Flight</span>
+      TG644 departs BKK 00:05 (12:05 AM) → lands NGO (Centrair) 7:30 AM, 29 Oct.
+      <br><br>
+      <span class="rlabel">Airport → Hotel</span>
+      Centrair Airport → Meitetsu Limited Express to Nagoya Sta. (~28–37 min) → transfer toward ibis Styles Nagoya, Meieki, Nakamura Ward (~10 min walk from Nagoya Sta.). See route link below.
+      <br><br>
+      <span class="rlabel">Plan for the day</span>
+      Check in → Glitch Coffee & Roasters → lunch at Unagi no Shiromura → optional FUJI Science Museum (planetarium ticket around noon) → optional Wagyu Tanji buffet dinner + Sakae shopping → back at hotel ~7:30 PM → lights out by 10 PM.
+    </div>
+
+    <div class="immi-wrap">
+      <div class="immi-head">🛂 IMMIGRATION CHECK</div>
+      <table class="immi-table">
+        <tr><td class="step">Arrival</td><td>Land NGO 7:30 AM → follow "Foreign Passports" signs to arrival immigration → present passport (+ Visit Japan Web QR if pre-registered, or paper disembarkation card) → fingerprint & photo scan.</td></tr>
+        <tr><td class="step">Customs</td><td>Baggage claim → customs declaration (use Visit Japan Web QR, or the paper form / red-green channel) → exit to arrivals hall.</td></tr>
+        <tr><td class="step">Tip</td><td>Register both passports on Visit Japan Web before you fly — it speeds up both immigration and customs with a QR code instead of paper forms.</td></tr>
+      </table>
+    </div>
+
+    <div class="immi-wrap">
+      <div class="immi-head">🚆 BUYING YOUR MEITETSU TICKET</div>
+      <table class="immi-table">
+        <tr><td class="step">Find the station</td><td>Centrair Station is directly below the terminal — go down to B1 and follow signs for "Meitetsu Line / Trains to Nagoya." You can't miss it; it's a short walk from arrivals.</td></tr>
+        <tr><td class="step">Buy the ticket</td><td>At the ticket machines, switch to English, then select "Nagoya" as your destination. You'll be offered two fare types: <b>¥980 Limited Express, non-reserved/regular car (一般席)</b> — no seat assigned, sit anywhere in a regular car — or a pricier first-class μticket (regular fare + ~¥450 reserved-seat supplement). Your recollection is correct: pick the <b>¥980 non-reserved option</b>, buy 2 tickets for both of you.</td></tr>
+        <tr><td class="step">Find your train</td><td>Any Meitetsu Limited Express or Rapid Limited Express bound for Nagoya works with this ticket (μSKY trains are reserved-only, so skip those unless you bought a μticket). Check the platform departure board for the next one — they run frequently.</td></tr>
+        <tr><td class="step">Board (non-reserved)</td><td>On the platform, look for car markings — first-class/reserved cars are labelled 一般車 vs the reserved car (often the front car, marked with a different colour/symbol on the platform door signage). Board any car NOT marked as the reserved/first-class car. Ride to the last stop, Meitetsu Nagoya Station (~28–37 min).</td></tr>
+        <tr><td class="step">To the hotel</td><td>At Meitetsu Nagoya Station, follow underground signs toward Nagoya Station's Sakura-dori/Meieki side, then take <b>Miyako Underground Mall Exit 4</b> up to street level. ibis Styles Nagoya is about a 2-minute walk from that exit (~8 min total walk from the station).</td></tr>
+      </table>
+    </div>
+
+    <div class="level-card">
+      <div class="lc-icon">🗺️</div>
+      <div class="lc-body">
+        <h4>Day 1 Route Overview</h4>
+        <p>Full route reference for airport → hotel → activities, as mapped.</p>
+        <a class="pipe-btn" target="_blank" href="https://maps.app.goo.gl/AP1LvAUtjNg882R78">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <img class="lc-img" src="https://www.ahstatic.com/photos/b4f6_ho_00_p_1024x768.jpg" alt="ibis Styles Nagoya">
+      <div class="lc-body">
+        <h4>ibis Styles Nagoya</h4>
+        <p>Meieki, Nakamura Ward — ~10 min walk from Nagoya Station. Home base for all 6 nights, breakfast included.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=ibis+Styles+Nagoya">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/Caffe_Latte.jpg" alt="Coffee">
+      <div class="lc-body">
+        <h4>Glitch Coffee & Roasters Nagoya</h4>
+        <p>Specialty single-origin coffee, inside the "9 hours" hotel entrance near Nagoya Station.</p>
+        <a class="pipe-btn" target="_blank" href="https://maps.app.goo.gl/KqCWiusJowKwDQxq6">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/Eel_kabayaki,Una-don,Katori-city,Japan.JPG" alt="Unagi eel dish">
+      <div class="lc-body">
+        <h4>Lunch — Unagi no Shiromura</h4>
+        <p>Charcoal-grilled eel (unagi) specialist, ~5 min walk from Hisaya-odori Station, 1-18-41 Izumi, Higashi-ku.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Unagi+no+Shiromura+Izumi+Nagoya">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <span class="tag-chip opt" style="margin:12px 0 0 14px;">OPTIONAL</span>
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/1st_floor_of_Nagoya_City_Science_Museum_20150125.JPG" alt="Nagoya Science Museum">
+      <div class="lc-body">
+        <h4>FUJI Nagoya Science Museum</h4>
+        <p>2-17-1 Sakae, Naka Ward. Home of the giant silver "Brother Earth" planetarium sphere. Museum + Planetarium combined ticket ¥800/adult. First two planetarium shows are walk-up only — arrive early if aiming for a noon session, as popular slots fill up.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=FUJI+Nagoya+Science+Museum">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="alert">
+      <div class="alert-inner">
+        <div class="alert-title">⚠️ MUSHROOM ALERT!</div>
+        <p><b>Wagyu Tanji Nagoya Sakae Nishiki</b> — book for 2 people about 2 weeks ahead. Same-day reservation cutoff is <b>3:00 PM</b>. ~8 min walk from the hotel, dinner around 5:00 PM, back at hotel by 8:00 PM.</p>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <span class="tag-chip opt" style="margin:12px 0 0 14px;">OPTIONAL</span>
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/090906_yakiniku.jpg" alt="Wagyu yakiniku">
+      <div class="lc-body">
+        <h4>Wagyu Tanji — Sakae Nishiki</h4>
+        <p>Buffet-style wagyu yakiniku, ~8 min walk from the hotel. Followed by a bit of shopping around Sakae.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Wagyu+Tanji+Nagoya+Sakae+Nishiki">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD 1-2 ============ -->
+<section class="world" id="world2">
+  <div class="world-header">
+    <div class="tag pixel">WORLD 1-2</div>
+    <h2>Matcha Run + Nintendo</h2>
+    <div class="meta">FRI 30 OCT 2026 · Kyoto - Uji</div>
+  </div>
+  <div class="world-body">
+    <div class="route-box">
+      <span class="rlabel">Don't forget!</span>
+      Stock up on matcha &amp; special snacks from Uji/Kyoto today — this is THE matcha day.
+      <br><br>
+      <span class="rlabel">Recommended order (per local intel)</span>
+      ① Kanbayashi Shunsho (JR Kyoto Isetan B1F, right off the train) → ② Ippodo Tea Main Store (~15 min away) → ③ Koé Donuts (1 km from Ippodo) → ride down to Uji → ④ Marukyu Koyamaen Main Plant (near Kintetsu Ogura Sta.) → ⑤ Nintendo Museum (5 min walk from Marukyu) → ⑥ Nakamura Tokichi (near JR Uji Sta., grab a queue number before Nintendo if possible) → ⑦ Enen Yakiniku back in Kyoto for dinner.
+    </div>
+
+    <div class="immi-wrap">
+      <div class="immi-head">🛂 IMMIGRATION CHECK</div>
+      <table class="immi-table na"><tr><td colspan="2">No immigration today — Kyoto/Uji is a domestic day trip within Japan. Just bring your passport along; some matcha shops may ask to see it for tax-free purchases.</td></tr></table>
+    </div>
+
+    <div class="level-card">
+      <div class="lc-icon">🍵</div>
+      <div class="lc-body">
+        <h4>JR Kyoto Isetan — B1F Fine Tea Corner (銘茶売場)</h4>
+        <p>Heads up: this whole corner is on <b>B1F (basement), not the ground floor</b> — it sits inside the food hall. <b>Kanbayashi Shunsho Honten</b> and a <b>Marukyu Koyamaen counter</b> are right next to each other here, plus <b>Gion Tsujiri</b> (matcha sweets) on B1/B2. Note: the Marukyu Koyamaen counter here is a department-store branch, separate from the Main Plant in Uji (stop ④) — it doesn't have the weekday-only/weekend-closed restriction, so it's a handy backup if the Uji branch sells out of your matcha grade.</p>
+        <a class="pipe-btn" target="_blank" href="https://maps.app.goo.gl/8sHWMmjf7ehaVZLZ7">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="alert">
+      <div class="alert-inner">
+        <div class="alert-title">⚠️ MUSHROOM ALERT!</div>
+        <p>① <b>Kanbayashi Shunsho</b> — opens 10:00, limit 2 cans/person. Expect a queue — go early, right after getting off the train at Kyoto Station (it's inside Isetan B1, no need to go outside).</p>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://ippodotea.com/cdn/shop/files/ippodo-tea-ummon-40-can-matcha.png?crop=center&height=600&v=1769096918&width=600" alt="Ippodo Tea matcha can">
+      <div class="lc-body">
+        <h4>② Ippodo Tea Kyoto Main Store</h4>
+        <p>~15 min from Kyoto Station by taxi/walk. Open 10:00–17:00, limit 3 types/person.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Ippodo+Tea+Kyoto+Main+Store">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <img class="lc-img" src="https://static.wixstatic.com/media/bfcf13_ff2a178c111547dbba1e95414b826524~mv2.jpg/v1/fit/w_2500,h_1330,al_c/bfcf13_ff2a178c111547dbba1e95414b826524~mv2.jpg" alt="Koé Donuts Kyoto">
+      <div class="lc-body">
+        <h4>③ Koé Donuts Kyoto</h4>
+        <p>Just 1 km from Ippodo, same area — refuel here before heading down to Uji. Open 8:00–20:00.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Koe+Donuts+Kyoto">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="alert">
+      <div class="alert-inner">
+        <div class="alert-title">⚠️ MUSHROOM ALERT!</div>
+        <p>④ <b>Marukyu Koyamaen Main Plant</b> — closed Sat/Sun! Open weekdays only, 9:00–17:00, limit 1 can/person. 30 Oct 2026 is a Friday so you're safe — but still go early, stock runs out fast.</p>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://www.marukyu-koyamaen.co.jp/english/shop/wp-content/uploads/2020/11/01-05-kinrin.jpg" alt="Marukyu Koyamaen matcha can">
+      <div class="lc-body">
+        <h4>④ Marukyu Koyamaen Main Plant</h4>
+        <p>Near Kintetsu Ogura Station, Uji. Weekdays only, 9:00–17:00.</p>
+        <a class="pipe-btn" target="_blank" href="https://maps.app.goo.gl/yUkSihH2xrbg2oFN9">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="alert">
+      <div class="alert-inner">
+        <div class="alert-title">⚠️ MUSHROOM ALERT!</div>
+        <p>⑤ <b>Nintendo Museum</b> — book tickets in advance (by 12 Jul, see Inventory page). Open 10:00–20:00, <b>closed Tuesdays</b> (30 Oct is a Friday, so you're fine). Budget 2–3 hours. Just a 5 min walk from Marukyu Koyamaen.</p>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://museum.nintendo.com/assets/images/index/hero/mv01_sp.webp" alt="Nintendo Museum">
+      <div class="lc-body">
+        <h4>⑤ Nintendo Museum</h4>
+        <p>Former Nintendo Uji Ogura plant, now a museum of Nintendo's history — from playing cards to consoles.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Nintendo+Museum+Uji+Kyoto">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="alert">
+      <div class="alert-inner">
+        <div class="alert-title">⚠️ MUSHROOM ALERT!</div>
+        <p>⑥ <b>Nakamura Tokichi</b> — near JR Uji Station, open till 17:30. Queue can run 1–2 hours! Grab a queue number first, then go do Nintendo Museum while you wait, and come back when it's your turn.</p>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://global.tokichi.jp/cdn/shop/files/m100-prm_prd_01.jpg?v=1749010924" alt="Nakamura Tokichi matcha">
+      <div class="lc-body">
+        <h4>⑥ Nakamura Tokichi Main Branch</h4>
+        <p>Matcha + matcha sweets near JR Uji Station — a sweet finish before heading back to Kyoto.</p>
+        <a class="pipe-btn" target="_blank" href="https://maps.app.goo.gl/LncM6WfQJeBcXC8W7">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="alert">
+      <div class="alert-inner">
+        <div class="alert-title">⚠️ MUSHROOM ALERT!</div>
+        <p>⑦ <b>Enen Yakiniku, Kyoto</b> — open 17:00–22:00. Books up FAST — reserve well ahead, alongside Wagyu Tanji on your booking list.</p>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/090906_yakiniku.jpg" alt="Yakiniku">
+      <div class="lc-body">
+        <h4>⑦ Enen Yakiniku — Kyoto</h4>
+        <p>Evening yakiniku dinner back in Kyoto before the return trip to Nagoya.</p>
+        <a class="pipe-btn" target="_blank" href="https://maps.app.goo.gl/YLWAxW1WCx6rZYNE8">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD 1-3 ============ -->
+<section class="world" id="world3">
+  <div class="world-header">
+    <div class="tag pixel">WORLD 1-3</div>
+    <h2>Ghibli Park</h2>
+    <div class="meta">SAT 31 OCT 2026 · Aichi · Premium Klook Ticket</div>
+  </div>
+  <div class="world-body">
+    <div class="route-box">
+      <span class="rlabel">Plan</span>
+      Book the Premium ticket via Klook in advance. 31 Oct is a Saturday, so expect weekend crowds and weekend ticket pricing — arrive as close to opening as possible.
+    </div>
+
+    <div class="immi-wrap">
+      <div class="immi-head">🛂 IMMIGRATION CHECK</div>
+      <table class="immi-table na"><tr><td colspan="2">No immigration today — Ghibli Park is in Aichi Prefecture, still domestic travel.</td></tr></table>
+    </div>
+    <div class="alert">
+      <div class="alert-inner">
+        <div class="alert-title">⚠️ MUSHROOM ALERT!</div>
+        <p><b>Ghibli Park (Premium)</b> — must be booked in advance via Klook (by 12 Jul, see Inventory page). Premium passes can sell out, especially for a Saturday visit.</p>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://ghibli-park.jp/site/img/about/daisouko/img12.jpg" alt="Ghibli's Grand Warehouse">
+      <div class="lc-body">
+        <h4>Ghibli Park</h4>
+        <p>Five themed areas incl. Ghibli's Grand Warehouse, Dondoko Forest and Hill of Youth, inside Expo 2005 Aichi Commemorative Park.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Ghibli+Park+Aichi+Japan">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD 1-4 ============ -->
+<section class="world" id="world4">
+  <div class="world-header">
+    <div class="tag pixel">WORLD 1-4</div>
+    <h2>Kamikochi Hiking Tour</h2>
+    <div class="meta">SUN 1 NOV 2026 · Nagano Alps · Klook Day Tour</div>
+  </div>
+  <div class="world-body">
+    <div class="route-box">
+      <span class="rlabel">Plan</span>
+      Start the day with the Nagoya → Kamikochi Hiking Tour booked via Klook (round-trip coach included). <b>Double-check the exact meeting point on your Klook voucher</b> — it has previously been the Silver Clock, Taiko-dori (West) Exit at Nagoya Station, but confirm against your specific booking.
+    </div>
+
+    <div class="immi-wrap">
+      <div class="immi-head">🛂 IMMIGRATION CHECK</div>
+      <table class="immi-table na"><tr><td colspan="2">No immigration today — Kamikochi (Nagano) is domestic travel within Japan.</td></tr></table>
+    </div>
+    <div class="alert">
+      <div class="alert-inner">
+        <div class="alert-title">⚠️ MUSHROOM ALERT!</div>
+        <p><b>Klook Kamikochi Hiking Tour</b> — book in advance (by 12 Jul, see Inventory page). Re-verify the meet-up point and time once you have your confirmed voucher.</p>
+      </div>
+    </div>
+    <div class="level-card">
+      <div class="lc-icon">📍</div>
+      <div class="lc-body">
+        <h4>Likely Meeting Point — Silver Clock, Nagoya Station</h4>
+        <p>Taiko-dori (West) Exit, JR Nagoya Station — confirm against your Klook voucher.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Nagoya+Station+Taiko+dori+West+Exit">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://www.snowmonkeyresorts.com/wp-content/uploads/2020/06/26612277_m.jpg" alt="Kamikochi">
+      <div class="lc-body">
+        <h4>Kamikochi</h4>
+        <p>Alpine valley with the Azusa River, Taisho Pond and the iconic Kappa-bashi suspension bridge.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Kamikochi+Nagano+Japan">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD 1-5 ============ -->
+<section class="world" id="world5">
+  <div class="world-header">
+    <div class="tag pixel">WORLD 1-5</div>
+    <h2>Takayama + Shirakawa-go</h2>
+    <div class="meta">MON 2 NOV 2026 · Gifu · Klook Day Tour</div>
+  </div>
+  <div class="world-body">
+    <div class="route-box">
+      <span class="rlabel">Plan</span>
+      Join the Takayama + Shirakawa-go Day Tour from Nagoya via Klook. <b>Re-check the meeting point</b> against your specific booking confirmation before heading out.
+    </div>
+
+    <div class="immi-wrap">
+      <div class="immi-head">🛂 IMMIGRATION CHECK</div>
+      <table class="immi-table na"><tr><td colspan="2">No immigration today — Takayama and Shirakawa-go (Gifu) are domestic travel within Japan.</td></tr></table>
+    </div>
+    <div class="alert">
+      <div class="alert-inner">
+        <div class="alert-title">⚠️ MUSHROOM ALERT!</div>
+        <p><b>Klook Takayama + Shirakawa-go Tour</b> — book in advance (by 12 Jul, see Inventory page). Confirm the exact meet-up point/time on your voucher.</p>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/Drying_persimmons,_Takayama_old_town_(31744396008).jpg" alt="Takayama old town">
+      <div class="lc-body">
+        <h4>Takayama Old Town (Sanmachi Suji)</h4>
+        <p>Preserved Edo-period merchant district with sake breweries, craft shops and street food.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Sanmachi+Suji+Old+Town+Takayama">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shirakawa-go_(2014-06-03).JPG" alt="Shirakawa-go">
+      <div class="lc-body">
+        <h4>Shirakawa-go</h4>
+        <p>UNESCO World Heritage mountain village famous for steep thatched gassho-zukuri farmhouses.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Shirakawa-go+Gifu+Japan">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD 1-6 ============ -->
+<section class="world" id="world6">
+  <div class="world-header">
+    <div class="tag pixel">WORLD 1-6</div>
+    <h2>Shopping Day</h2>
+    <div class="meta">TUE 3 NOV 2026 · Nagoya</div>
+  </div>
+  <div class="world-body">
+    <div class="route-box">
+      <span class="rlabel">Plan</span>
+      Full day free in Nagoya — AEON Mall and general shopping before flying home tomorrow. Also a good day to revisit Daikoku Drug or Don Quijote for anything missed.
+    </div>
+
+    <div class="immi-wrap">
+      <div class="immi-head">🛂 IMMIGRATION CHECK</div>
+      <table class="immi-table na"><tr><td colspan="2">No immigration today — still in Nagoya, domestic. Just keep all shopping receipts from today for tomorrow's airport tax refund (see Boss Warning below).</td></tr></table>
+    </div>
+
+    <div class="boss-alert alert">
+      <div class="alert-inner">
+        <div class="alert-title">🚨 BOSS WARNING — TAX RULE CHANGE!</div>
+        <p>Japan's tax-free system changes on <b>1 Nov 2026</b>. Shopping on 29–30 Oct uses the current system (instant exemption at checkout, item sealed in a bag — don't open until you're out of Japan, carry as hand luggage for the customs check before security). But <b>today (3 Nov) is after the changeover</b> — at AEON Mall and other stores you'll likely pay full price (incl. tax) and then need to claim your refund at a counter at <b>Centrair Airport</b> before departure tomorrow. Keep ALL receipts from today's shopping!</p>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <img class="lc-img" src="https://4ltg152e5bckmge3.public.blob.vercel-storage.com/assets/images/nagoyachaya/index/img-kv_1.jpg" alt="AEON Mall Nagoya Chaya">
+      <div class="lc-body">
+        <h4>AEON Mall</h4>
+        <p>Behind the garden — full-day shopping stop as mapped.</p>
+        <a class="pipe-btn" target="_blank" href="https://maps.app.goo.gl/VMzyXDGudjHdLn4X9">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD 1-7 / FINAL BOSS ============ -->
+<section class="world" id="world7">
+  <div class="world-header" style="background:var(--mario-red-dark);">
+    <div class="tag pixel" style="color:#fff;">👑 FINAL BOSS</div>
+    <h2>Departure Day</h2>
+    <div class="meta">WED 4 NOV 2026 · Centrair Airport</div>
+  </div>
+  <div class="world-body">
+    <div class="route-box">
+      <span class="rlabel">Flight</span>
+      TG645 departs Centrair (NGO) at 11:00 AM, arriving Bangkok (BKK) around 15:00–15:40 local.
+      <br><br>
+      <span class="rlabel">Plan</span>
+      Check out & leave the hotel by 7:30 AM → Meitetsu Limited Express to Centrair (~28–37 min) → that leaves a comfortable ~2.5–3 hour buffer before the 11:00 AM departure for check-in, tax refund processing, security, and boarding.
+    </div>
+
+    <div class="immi-wrap">
+      <div class="immi-head">🛂 IMMIGRATION CHECK</div>
+      <table class="immi-table">
+        <tr><td class="step">Tax Refund</td><td>Before check-in — visit the tax refund counter (departures area) for any 3 Nov AEON purchases. Bring passport + all receipts.</td></tr>
+        <tr><td class="step">Check-in</td><td>TG645 check-in counters, then proceed to security screening.</td></tr>
+        <tr><td class="step">Departure</td><td>Present passport at departure immigration (manned counter or automated gate if registered) → exit stamp → head to the gate.</td></tr>
+        <tr><td class="step">Customs (BKK)</td><td>On arrival in Bangkok, declare anything over duty-free allowance; sealed pre-1 Nov tax-free items should stay unopened until you've cleared Thai customs.</td></tr>
+      </table>
+    </div>
+
+    <div class="boss-alert alert">
+      <div class="alert-inner">
+        <div class="alert-title">🚨 BOSS WARNING — TAX REFUND TODAY!</div>
+        <p>Anything bought on <b>3 Nov (AEON Mall, post-changeover)</b> needs its refund claimed at the <b>tax refund counter at Centrair Airport</b> — bring your passport and every receipt. Items from <b>29–30 Oct</b> (pre-1 Nov, old system) should already be tax-exempt and sealed — keep them unopened and in hand luggage in case customs checks before security. Build in extra time at the airport for this.</p>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/Chubu-Centrair-International-Airport-Bus-Terminal.jpg" alt="Centrair Airport">
+      <div class="lc-body">
+        <h4>Chubu Centrair International Airport</h4>
+        <p>On an artificial island in Ise Bay. Meitetsu trains connect directly into the terminal basement.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Chubu+Centrair+International+Airport">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BONUS: SHOPPING GUIDE ============ -->
+<section class="world" id="bonus">
+  <div class="world-header" style="background:var(--pipe-dark);">
+    <div class="tag pixel">🛍️ BONUS STAGE</div>
+    <h2>Shopping Guide</h2>
+    <div class="meta">Supplements · Skincare · Snacks for you &amp; mom</div>
+  </div>
+  <div class="world-body">
+    <div class="route-box">
+      Best Nagoya stops for supplements, skincare, facial masks, shampoo, and snacks/gifts to bring home:
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/Sunshine_Sakae_in_Nagoya.jpg" alt="Daikoku Drug Sunshine Sakae">
+      <div class="lc-body">
+        <h4>Daikoku Drug — Sunshine Sakae</h4>
+        <p>3F, 3-24-4 Nishiki, Naka Ward. Skincare, vitamins/supplements, facial masks, shampoo, snacks — tax-free counter on site.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Daikoku+Drug+Sunshine+Sakae+Nagoya">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/Don.Quijote-Nagoya-Sakae.JPG" alt="Don Quijote Sakae Honten">
+      <div class="lc-body">
+        <h4>Don Quijote — Sakae Honten</h4>
+        <p>Open 24 hours, 4 floors of skincare, J-beauty, vitamins, and snacks at discount prices. Tax-free threshold is ¥5,000; staff can guide you through the process at checkout.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Don+Quijote+Sakae+Honten+Nagoya">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/Matsuzakaya_main_building.jpg" alt="Matsuzakaya Nagoya">
+      <div class="lc-body">
+        <h4>Matsuzakaya Nagoya — Depachika (B1)</h4>
+        <p>Department store basement food hall — Nagoya's best hunting ground for premium boxed snacks, sweets, and gift-worthy souvenirs to bring home.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Matsuzakaya+Nagoya+Department+Store">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INVENTORY: BUDGET + CHECKLIST ============ -->
+<section class="world" id="inventory">
+  <div class="world-header" style="background:var(--gold-dark);">
+    <div class="tag pixel" style="color:#1c1c1c;">🪙 INVENTORY</div>
+    <h2 style="color:#1c1c1c;">Budget &amp; Checklist</h2>
+    <div class="meta" style="color:#3a3530;">Cost per person, in THB</div>
+  </div>
+  <div class="world-body">
+    <table class="coin-table">
+      <tr><th>Item</th><th class="amt">THB / person</th></tr>
+      <tr><td>Round-trip flight (TG644/TG645) — PAID</td><td class="amt">20,225</td></tr>
+      <tr><td>ibis Styles Nagoya, 6 nights incl. breakfast — PAID</td><td class="amt">12,805</td></tr>
+      <tr><td>Local transport + round-trip Shinkansen, Nagoya ↔ Kyoto-Uji (7 days)</td><td class="amt">~4,000</td></tr>
+      <tr><td>Activity tickets — Klook Kamikochi (1,700) + Klook Takayama/Shirakawa-go (1,700) + Nintendo Museum (800) + Ghibli Park Premium (800)</td><td class="amt">~5,000</td></tr>
+      <tr><td>Food, snacks, water (7 days)</td><td class="amt">~15,000–18,000</td></tr>
+      <tr class="total"><td>Estimated Grand Total</td><td class="amt">~57,000–60,000</td></tr>
+      <tr class="range"><td colspan="2">Range reflects the food/snack spread — yakiniku dinner costs (Wagyu Tanji, Enen) aren't fixed yet and are assumed to draw from the food budget.</td></tr>
+    </table>
+
+    <h3 class="section-title pixel" style="margin-top:26px;">— BOOKING CHECKLIST —</h3>
+    <ul class="checklist">
+      <li>ibis Styles Nagoya (6N, BF incl.) <span class="status-pill status-paid">PAID</span></li>
+      <li>NGO ↔ BKK flights (TG644/TG645) <span class="status-pill status-paid">PAID</span></li>
+      <li>Klook: Takayama + Shirakawa-go Day Tour <span class="status-pill status-todo">BOOK BY 12 JUL</span></li>
+      <li>Klook: Nagoya Kamikochi Hiking Tour <span class="status-pill status-todo">BOOK BY 12 JUL</span></li>
+      <li>Nintendo Museum ticket <span class="status-pill status-todo">BOOK BY 12 JUL</span></li>
+      <li>Ghibli Park Premium ticket (Klook) <span class="status-pill status-todo">BOOK BY 12 JUL</span></li>
+      <li>Wagyu Tanji yakiniku (Day 1) <span class="status-pill status-todo">BOOK ~2 WKS AHEAD</span></li>
+      <li>Enen yakiniku, Kyoto (Day 2) <span class="status-pill status-todo">BOOK ASAP</span></li>
+      <li>Shinkansen Nagoya ↔ Kyoto tickets <span class="status-pill status-note">BUY DAY-OF, NO RESERVATION NEEDED</span></li>
+      <li>Tax-free receipts (3 Nov AEON shopping) <span class="status-pill status-note">CLAIM AT AIRPORT</span></li>
+    </ul>
+
+    <h3 class="section-title pixel" style="margin-top:26px;">— TO-DO LIST —</h3>
+    <ul class="checklist">
+      <li>
+        <div><b>QR Code — Japan visitor</b><br><span style="font-size:11px;color:#7a6e57;">Register on Visit Japan Web before you fly, so you have the QR code ready for immigration &amp; customs.</span></div>
+        <span class="status-pill status-todo">TO DO</span>
+      </li>
+      <li>
+        <div><b>SIM / Roaming + Travel Insurance</b><br><span style="font-size:11px;color:#7a6e57;">Buy a SIM/eSIM or roaming combo bundled with travel insurance before departure.</span></div>
+        <span class="status-pill status-todo">TO DO</span>
+      </li>
+      <li>
+        <div><b>Cash — exchange JPY</b><br><span style="font-size:11px;color:#7a6e57;">Bring about 15,000 THB per person worth of Japanese yen in cash.</span></div>
+        <span class="status-pill status-todo">TO DO</span>
+      </li>
+      <li>
+        <div><b>Pack weather-appropriate clothing</b><br><span style="font-size:11px;color:#7a6e57;">Late Oct–early Nov in Nagoya/Kyoto/Gifu is cool, especially mornings/evenings — pack layers and a light jacket.</span></div>
+        <span class="status-pill status-todo">TO DO</span>
+      </li>
+      <li>
+        <div><b>Pack personal medicines</b><br><span style="font-size:11px;color:#7a6e57;">Bring any prescription/regular medicine plus a small travel kit (painkillers, motion sickness, stomach meds).</span></div>
+        <span class="status-pill status-todo">TO DO</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<footer class="world-footer">
+  <div class="pixel">THANK YOU FOR PLAYING!</div>
+  <div>🍄 Have an amazing trip 🍄</div>
+  <div class="credit">Photos: Wikimedia Commons (CC-licensed). Map links open Google Maps for each location. Hours, prices, queue notes and tax rules are estimates based on research — please reconfirm close to your travel dates, especially the Nov 2026 tax-free system change.</div>
+</footer>
+
+<nav id="coinNav">
+  <a href="#cover">★</a>
+  <a href="#world1">1-1</a>
+  <a href="#world2">1-2</a>
+  <a href="#world3">1-3</a>
+  <a href="#world4">1-4</a>
+  <a href="#world5">1-5</a>
+  <a href="#world6">1-6</a>
+  <a href="#world7">👑</a>
+  <a href="#bonus">🛍</a>
+  <a href="#inventory">🪙</a>
+  <a href="#immisummary">🛂</a>
+</nav>
+
+</body>
+</html>
