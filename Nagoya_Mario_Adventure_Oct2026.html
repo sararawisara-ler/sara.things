@@ -184,8 +184,12 @@
   .checklist{list-style:none;padding:0;margin:0;}
   .checklist li{
     background:#fff;border:2px solid var(--black);border-radius:8px;padding:10px 12px;margin-bottom:8px;
-    font-size:12.5px;display:flex;justify-content:space-between;gap:8px;align-items:center;
+    font-size:12.5px;display:flex;flex-direction:column;gap:8px;
   }
+  .cl-row{display:flex;justify-content:space-between;gap:8px;align-items:center;}
+  .cl-ticks{display:flex;gap:16px;padding-top:8px;border-top:1px dashed #ddd2bd;}
+  .cl-ticks label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#5b5346;cursor:pointer;}
+  .cl-ticks input[type="checkbox"]{width:16px;height:16px;accent-color:var(--pipe);cursor:pointer;}
   .status-pill{font-size:10px;font-weight:800;padding:4px 9px;border-radius:10px;white-space:nowrap;}
   .status-paid{background:var(--pipe);color:#fff;}
   .status-todo{background:var(--mario-red);color:#fff;}
@@ -223,9 +227,121 @@
     #cover h1.pixel{font-size:18px;}
     .world-header h2{font-size:17px;}
   }
+
+  /* PASSCODE GATE */
+  #gate{
+    min-height:100vh;background:linear-gradient(180deg,var(--sky) 0%, var(--sky-dark) 100%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px 20px;box-sizing:border-box;
+  }
+  #gate .pixel-small{color:#fff;margin-bottom:14px;}
+  #gate h1.pixel{color:var(--gold);font-size:20px;line-height:1.6;text-shadow:3px 3px 0 var(--mario-red-dark), -1px -1px 0 #000;margin:10px 0 24px;}
+  #gate .pipe-frame{
+    background:var(--pipe);border:4px solid var(--black);border-radius:14px;padding:22px 20px;
+    box-shadow:0 6px 0 var(--pipe-dark);max-width:300px;width:100%;
+  }
+  #gate label{display:block;color:#fff;font-size:11px;margin-bottom:12px;font-family:'Press Start 2P';}
+  #gate input[type="password"]{
+    width:100%;padding:12px 14px;border-radius:8px;border:3px solid var(--black);
+    font-size:16px;text-align:center;margin-bottom:14px;letter-spacing:2px;box-sizing:border-box;
+  }
+  #gate button{
+    width:100%;background:var(--gold);color:var(--black);border:3px solid var(--black);
+    border-radius:30px;padding:12px;font-family:'Press Start 2P';font-size:11px;cursor:pointer;
+    box-shadow:0 4px 0 var(--gold-dark);
+  }
+  #gate button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--gold-dark);}
+  #gate .gate-error{
+    color:#fff;background:var(--mario-red);border:2px solid var(--black);border-radius:8px;
+    padding:8px 10px;font-size:11.5px;margin-top:14px;display:none;
+  }
+
+  /* HUB / MAIN MENU */
+  #hub{min-height:100vh;background:var(--cream);padding:36px 18px 40px;text-align:center;box-sizing:border-box;}
+  #hub h1.pixel{color:var(--mario-red);font-size:16px;line-height:1.7;margin-bottom:6px;}
+  #hub .hub-sub{font-size:12px;color:#7a6e57;margin-bottom:26px;}
+  .hub-pipe{
+    display:flex;align-items:center;gap:14px;width:100%;text-align:left;text-decoration:none;
+    background:#fff;border:3px solid var(--black);border-radius:16px;padding:14px 16px;
+    margin-bottom:16px;box-shadow:0 5px 0 rgba(0,0,0,0.2);cursor:pointer;font-family:inherit;
+    color:var(--ink);box-sizing:border-box;appearance:none;
+  }
+  .hub-pipe:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,0.2);}
+  .hub-pipe .hub-icon{
+    width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:22px;flex-shrink:0;border:3px solid var(--black);
+  }
+  .hub-pipe b{display:block;font-size:13.5px;color:var(--mario-blue);}
+  .hub-pipe span{font-size:11.5px;color:#7a6e57;}
+  .hub-pipe.p1 .hub-icon{background:var(--gold);}
+  .hub-pipe.p2 .hub-icon{background:#a8e6a1;}
+  .hub-pipe.p3 .hub-icon{background:#ffd9a0;}
+  .hub-pipe.p4 .hub-icon{background:#bfe9f7;}
+  .hub-pipe.p5 .hub-icon{background:#f4b8c9;}
+
+  /* app pages + back button */
+  .app-page{background:var(--cream);min-height:100vh;}
+  .back-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    margin:10px 0 0 10px;background:var(--black);color:var(--gold);border:2px solid var(--gold);
+    border-radius:20px;padding:8px 14px;font-size:10.5px;font-family:'Press Start 2P';cursor:pointer;
+  }
+
+  /* matcha map page */
+  .matcha-city{
+    font-family:'Press Start 2P';font-size:12px;color:var(--mario-red);margin:22px 0 12px;
+    text-align:center;
+  }
 </style>
 </head>
 <body>
+
+<!-- PASSCODE GATE -->
+<section id="gate">
+  <div class="pixel-small">★ ★ ★ RESTRICTED WARP ZONE ★ ★ ★</div>
+  <h1 class="pixel">ENTER THE<br>SECRET CODE</h1>
+  <form class="pipe-frame" onsubmit="checkGate(); return false;">
+    <label for="gateInput">🔒 PASSCODE</label>
+    <input type="password" id="gateInput" autocomplete="off" placeholder="••••••••">
+    <button type="submit">▶ PRESS START</button>
+    <div class="gate-error" id="gateError">❌ WRONG CODE, TRY AGAIN!</div>
+  </form>
+</section>
+
+<!-- HUB / MAIN MENU -->
+<section id="hub" style="display:none;">
+  <div class="pixel-small" style="color:var(--mario-red);">★ ★ ★ WELCOME BACK, PLAYERS ★ ★ ★</div>
+  <h1 class="pixel">SELECT<br>YOUR WARP</h1>
+  <div class="hub-sub">Choose a pipe to continue your Nagoya adventure</div>
+
+  <button type="button" class="hub-pipe p1" onclick="showPage('page-plantrip')">
+    <span class="hub-icon">🍄</span>
+    <span><b>QUEST MODE</b><span>Full 7-day trip plan, day by day</span></span>
+  </button>
+
+  <a class="hub-pipe p2" target="_blank" href="https://docs.google.com/spreadsheets/d/1U01ms-xfywvCTDMTR5A2UVbxkEqWmZb8/edit?usp=sharing&ouid=108672580874795587281&rtpof=true&sd=true">
+    <span class="hub-icon">🪙</span>
+    <span><b>COIN COUNTER</b><span>Log daily expenses (opens Google Sheet)</span></span>
+  </a>
+
+  <button type="button" class="hub-pipe p3" onclick="showPage('page-checklist')">
+    <span class="hub-icon">✅</span>
+    <span><b>POWER CHECKLIST</b><span>Booking status &amp; to-do list</span></span>
+  </button>
+
+  <button type="button" class="hub-pipe p4" onclick="showPage('page-matcha')">
+    <span class="hub-icon">🍵</span>
+    <span><b>MATCHA WARP ZONE</b><span>Every tea stop — Nagoya, Kyoto &amp; Uji</span></span>
+  </button>
+
+  <a class="hub-pipe p5" target="_blank" href="https://drive.google.com/drive/folders/1dIyX1WCetdbFYU2C63vtIfJ4Xoj1J4wx?usp=sharing">
+    <span class="hub-icon">🎁</span>
+    <span><b>ITEM BOX</b><span>Booked tickets &amp; event confirmations (Drive)</span></span>
+  </a>
+</section>
+
+<div id="page-plantrip" class="app-page" style="display:none;">
+<button type="button" class="back-pill" onclick="showHub()">🍄 HUB</button>
 
 <!-- COVER -->
 <section id="cover">
@@ -254,7 +370,7 @@
     <a class="map-node" href="#world6"><span class="node-num">1-6</span><span class="node-text"><b>Shopping Day</b><span>3 Nov · Nagoya AEON</span></span></a>
     <a class="map-node castle" href="#world7"><span class="node-num">👑</span><span class="node-text"><b>FINAL BOSS: Departure</b><span>4 Nov · Centrair Airport</span></span></a>
     <a class="map-node castle" href="#bonus"><span class="node-num">🛍️</span><span class="node-text"><b>Bonus Stage: Shopping Guide</b><span>Skincare · Vitamins · Snacks</span></span></a>
-    <a class="map-node castle" href="#inventory"><span class="node-num">🪙</span><span class="node-text"><b>Inventory: Budget & Checklist</b><span>Costs + book-by dates</span></span></a>
+    <a class="map-node castle" href="#inventory"><span class="node-num">🪙</span><span class="node-text"><b>Inventory: Budget</b><span>Estimated cost per person</span></span></a>
     <a class="map-node castle" href="#immisummary"><span class="node-num">🛂</span><span class="node-text"><b>Immigration Summary</b><span>Plain itinerary to show officers</span></span></a>
   </div>
 </section>
@@ -797,7 +913,7 @@
 <section class="world" id="inventory">
   <div class="world-header" style="background:var(--gold-dark);">
     <div class="tag pixel" style="color:#1c1c1c;">🪙 INVENTORY</div>
-    <h2 style="color:#1c1c1c;">Budget &amp; Checklist</h2>
+    <h2 style="color:#1c1c1c;">Budget</h2>
     <div class="meta" style="color:#3a3530;">Cost per person, in THB</div>
   </div>
   <div class="world-body">
@@ -809,46 +925,8 @@
       <tr class="total"><td>Booked &amp; Paid Subtotal</td><td class="amt">~38,000</td></tr>
       <tr><td>Remaining budget — transportation, food &amp; meals, shopping (open, flexible split)</td><td class="amt">25,000</td></tr>
       <tr class="total"><td>Grand Total</td><td class="amt">~63,000</td></tr>
-      <tr class="range"><td colspan="2">Everything else is booked and paid — the 25,000 THB remaining is one open pool covering local transport + Shinkansen, all meals/snacks, and shopping combined, no fixed sub-split; spend it however day to day.</td></tr>
+      <tr class="range"><td colspan="2">Everything else is booked and paid — the 25,000 THB remaining is one open pool covering local transport + Shinkansen, all meals/snacks, and shopping combined, no fixed sub-split; spend it however day to day. For live day-to-day tracking, use the Coin Counter (Google Sheet) from the Hub.</td></tr>
     </table>
-
-    <h3 class="section-title pixel" style="margin-top:26px;">— BOOKING CHECKLIST —</h3>
-    <ul class="checklist">
-      <li>ibis Styles Nagoya (6N, BF incl.) <span class="status-pill status-paid">PAID</span></li>
-      <li>NGO ↔ BKK flights (TG644/TG645) <span class="status-pill status-paid">PAID</span></li>
-      <li>Klook: Takayama + Shirakawa-go Day Tour <span class="status-pill status-paid">BOOKED</span></li>
-      <li>Klook: Nagoya Kamikochi Hiking Tour <span class="status-pill status-paid">BOOKED</span></li>
-      <li>Nintendo Museum ticket <span class="status-pill status-paid">BOOKED</span></li>
-      <li>Ghibli Park Premium ticket (Klook) <span class="status-pill status-paid">BOOKED</span></li>
-      <li>Wagyu Tanji yakiniku (Day 1) <span class="status-pill status-todo">BOOK ~2 WKS AHEAD</span></li>
-      <li>Enen yakiniku, Kyoto (Day 2) <span class="status-pill status-todo">BOOK ASAP</span></li>
-      <li>Shinkansen Nagoya ↔ Kyoto tickets <span class="status-pill status-note">BUY DAY-OF, NO RESERVATION NEEDED</span></li>
-      <li>Tax-free receipts (3 Nov AEON shopping) <span class="status-pill status-note">CLAIM AT AIRPORT</span></li>
-    </ul>
-
-    <h3 class="section-title pixel" style="margin-top:26px;">— TO-DO LIST —</h3>
-    <ul class="checklist">
-      <li>
-        <div><b>QR Code — Japan visitor</b><br><span style="font-size:11px;color:#7a6e57;">Register on Visit Japan Web before you fly, so you have the QR code ready for immigration &amp; customs.</span></div>
-        <span class="status-pill status-todo">TO DO</span>
-      </li>
-      <li>
-        <div><b>SIM / Roaming + Travel Insurance</b><br><span style="font-size:11px;color:#7a6e57;">Buy a SIM/eSIM or roaming combo bundled with travel insurance before departure.</span></div>
-        <span class="status-pill status-todo">TO DO</span>
-      </li>
-      <li>
-        <div><b>Cash — exchange JPY</b><br><span style="font-size:11px;color:#7a6e57;">Bring about 15,000 THB per person worth of Japanese yen in cash.</span></div>
-        <span class="status-pill status-todo">TO DO</span>
-      </li>
-      <li>
-        <div><b>Pack weather-appropriate clothing</b><br><span style="font-size:11px;color:#7a6e57;">Late Oct–early Nov in Nagoya/Kyoto/Gifu is cool, especially mornings/evenings — pack layers and a light jacket.</span></div>
-        <span class="status-pill status-todo">TO DO</span>
-      </li>
-      <li>
-        <div><b>Pack personal medicines</b><br><span style="font-size:11px;color:#7a6e57;">Bring any prescription/regular medicine plus a small travel kit (painkillers, motion sickness, stomach meds).</span></div>
-        <span class="status-pill status-todo">TO DO</span>
-      </li>
-    </ul>
   </div>
 </section>
 
@@ -871,6 +949,233 @@
   <a href="#inventory">🪙</a>
   <a href="#immisummary">🛂</a>
 </nav>
+
+</div><!-- /page-plantrip -->
+
+<!-- ============ CHECKLIST PAGE ============ -->
+<div id="page-checklist" class="app-page" style="display:none;">
+<button type="button" class="back-pill" onclick="showHub()">🍄 HUB</button>
+<section class="world">
+  <div class="world-header" style="background:var(--gold-dark);">
+    <div class="tag pixel" style="color:#1c1c1c;">✅ POWER CHECKLIST</div>
+    <h2 style="color:#1c1c1c;">Booking &amp; To-Do</h2>
+    <div class="meta" style="color:#3a3530;">Everything to lock down before you fly</div>
+  </div>
+  <div class="world-body">
+    <h3 class="section-title pixel">— BOOKING CHECKLIST —</h3>
+    <ul class="checklist">
+      <li>
+        <div class="cl-row"><span>ibis Styles Nagoya (6N, BF incl.)</span><span class="status-pill status-paid">PAID</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="bk0-yok"> Yok</label><label><input type="checkbox" data-key="bk0-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><span>NGO ↔ BKK flights (TG644/TG645)</span><span class="status-pill status-paid">PAID</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="bk1-yok"> Yok</label><label><input type="checkbox" data-key="bk1-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><span>Klook: Takayama + Shirakawa-go Day Tour</span><span class="status-pill status-paid">BOOKED</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="bk2-yok"> Yok</label><label><input type="checkbox" data-key="bk2-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><span>Klook: Nagoya Kamikochi Hiking Tour</span><span class="status-pill status-paid">BOOKED</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="bk3-yok"> Yok</label><label><input type="checkbox" data-key="bk3-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><span>Nintendo Museum ticket</span><span class="status-pill status-paid">BOOKED</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="bk4-yok"> Yok</label><label><input type="checkbox" data-key="bk4-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><span>Ghibli Park Premium ticket (Klook)</span><span class="status-pill status-paid">BOOKED</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="bk5-yok"> Yok</label><label><input type="checkbox" data-key="bk5-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><span>Wagyu Tanji yakiniku (Day 1)</span><span class="status-pill status-todo">BOOK ~2 WKS AHEAD</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="bk6-yok"> Yok</label><label><input type="checkbox" data-key="bk6-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><span>Enen yakiniku, Kyoto (Day 2)</span><span class="status-pill status-todo">BOOK ASAP</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="bk7-yok"> Yok</label><label><input type="checkbox" data-key="bk7-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><span>Shinkansen Nagoya ↔ Kyoto tickets</span><span class="status-pill status-note">BUY DAY-OF, NO RESERVATION NEEDED</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="bk8-yok"> Yok</label><label><input type="checkbox" data-key="bk8-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><span>Tax-free receipts (3 Nov AEON shopping)</span><span class="status-pill status-note">CLAIM AT AIRPORT</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="bk9-yok"> Yok</label><label><input type="checkbox" data-key="bk9-teelak"> TeeLak</label></div>
+      </li>
+    </ul>
+
+    <h3 class="section-title pixel" style="margin-top:26px;">— TO-DO LIST —</h3>
+    <ul class="checklist">
+      <li>
+        <div class="cl-row"><div><b>QR Code — Japan visitor</b><br><span style="font-size:11px;color:#7a6e57;">Register on Visit Japan Web before you fly, so you have the QR code ready for immigration &amp; customs.</span></div><span class="status-pill status-todo">TO DO</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="td0-yok"> Yok</label><label><input type="checkbox" data-key="td0-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><div><b>SIM / Roaming + Travel Insurance</b><br><span style="font-size:11px;color:#7a6e57;">Buy a SIM/eSIM or roaming combo bundled with travel insurance before departure.</span></div><span class="status-pill status-todo">TO DO</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="td1-yok"> Yok</label><label><input type="checkbox" data-key="td1-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><div><b>Cash — exchange JPY</b><br><span style="font-size:11px;color:#7a6e57;">Bring about 15,000 THB per person worth of Japanese yen in cash.</span></div><span class="status-pill status-todo">TO DO</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="td2-yok"> Yok</label><label><input type="checkbox" data-key="td2-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><div><b>Pack weather-appropriate clothing</b><br><span style="font-size:11px;color:#7a6e57;">Late Oct–early Nov in Nagoya/Kyoto/Gifu is cool, especially mornings/evenings — pack layers and a light jacket.</span></div><span class="status-pill status-todo">TO DO</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="td3-yok"> Yok</label><label><input type="checkbox" data-key="td3-teelak"> TeeLak</label></div>
+      </li>
+      <li>
+        <div class="cl-row"><div><b>Pack personal medicines</b><br><span style="font-size:11px;color:#7a6e57;">Bring any prescription/regular medicine plus a small travel kit (painkillers, motion sickness, stomach meds).</span></div><span class="status-pill status-todo">TO DO</span></div>
+        <div class="cl-ticks"><label><input type="checkbox" data-key="td4-yok"> Yok</label><label><input type="checkbox" data-key="td4-teelak"> TeeLak</label></div>
+      </li>
+    </ul>
+  </div>
+</section>
+</div><!-- /page-checklist -->
+
+<!-- ============ MATCHA MAP PAGE ============ -->
+<div id="page-matcha" class="app-page" style="display:none;">
+<button type="button" class="back-pill" onclick="showHub()">🍄 HUB</button>
+<section class="world">
+  <div class="world-header" style="background:var(--pipe-dark);">
+    <div class="tag pixel">🍵 WARP ZONE</div>
+    <h2>Matcha Map</h2>
+    <div class="meta">Every tea stop across Nagoya, Kyoto &amp; Uji</div>
+  </div>
+  <div class="world-body">
+
+    <div class="matcha-city">— NAGOYA —</div>
+    <div class="level-card">
+      <div class="lc-icon">🍵</div>
+      <div class="lc-body">
+        <h4>Myōkōen Tea Store</h4>
+        <p>Historic tea shop since 1916, inside Sakaechika underground mall, directly connected to Sakae Station. Try the hojicha or matcha latte at the adjoining tea stand.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Myokoen+Sakaechika+Nagoya">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="matcha-city">— KYOTO —</div>
+    <div class="level-card">
+      <div class="lc-icon">🍵</div>
+      <div class="lc-body">
+        <h4>Kanbayashi Shunsho Honten — JR Kyoto Isetan (B1F)</h4>
+        <p>450-year history, inside the Isetan food hall basement. Opens 10:00, limit 2 cans/person.</p>
+        <a class="pipe-btn" target="_blank" href="https://maps.app.goo.gl/8sHWMmjf7ehaVZLZ7">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+    <div class="level-card">
+      <div class="lc-icon">🍵</div>
+      <div class="lc-body">
+        <h4>Ippodo Tea Kyoto Main Store</h4>
+        <p>Since 1717 — Kyoto's most famous tea house, on Teramachi-dōri. Open 10:00–17:00, limit 3 types/person.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Ippodo+Tea+Kyoto+Main+Store">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+    <div class="matcha-city">— UJI —</div>
+    <div class="level-card">
+      <div class="lc-icon">🍵</div>
+      <div class="lc-body">
+        <h4>Tamakitei</h4>
+        <p>150-year-old teahouse tucked in an alleyway in the Gokashō neighborhood, near Ōbaku Station.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Tamakitei+Gokasho+Uji+Kyoto">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+    <div class="level-card">
+      <div class="lc-icon">🍵</div>
+      <div class="lc-body">
+        <h4>Nakamura Tokichi — Byōdō-in Branch</h4>
+        <p>Matcha parfaits and sweets on Byōdō-in Omotesandō street, near the temple itself.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Nakamura+Tokichi+Byodoin+Branch+Uji">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+    <div class="level-card">
+      <div class="lc-icon">🍵</div>
+      <div class="lc-body">
+        <h4>Ocha no Kanbayashi — Ujibashidōri Branch</h4>
+        <p>Tea shop right on Ujibashidōri, near the Uji River bridge.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Ocha+no+Kanbayashi+Ujibashidori+Uji">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+    <div class="level-card">
+      <div class="lc-icon">🌿</div>
+      <div class="lc-body">
+        <h4>Horii Shichimeien</h4>
+        <p>Historic Uji tea specialist since 1879, named after the "Seven Tea Plantations of Uji." Owns the Okunoyama tea garden.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Horii+Shichimeien+Uji+Kyoto">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+    <div class="level-card">
+      <img class="lc-img" src="https://www.marukyu-koyamaen.co.jp/english/shop/wp-content/uploads/2020/11/01-05-kinrin.jpg" alt="Marukyu Koyamaen matcha can">
+      <div class="lc-body">
+        <h4>Marukyu Koyamaen Main Plant</h4>
+        <p>Near Ogura Station, right across from the Nintendo Museum. Weekdays only, 9:00–17:00.</p>
+        <a class="pipe-btn" target="_blank" href="https://maps.app.goo.gl/yUkSihH2xrbg2oFN9">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+    <div class="level-card">
+      <span class="tag-chip opt" style="margin:12px 0 0 14px;">BONUS — NOT TEA</span>
+      <div class="lc-icon">🍜</div>
+      <div class="lc-body">
+        <h4>Torikiku</h4>
+        <p>Not a tea retailer, but worth the detour for matcha soba noodles — tiny homestyle spot near Byōdō-in. Queues can run 30+ min.</p>
+        <a class="pipe-btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Torikiku+Renge+Uji+Kyoto">🟢 WARP TO MAP</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+</div><!-- /page-matcha -->
+
+<script>
+  var GATE_CODE = 'sunnyday.4';
+
+  function checkGate(){
+    var input = document.getElementById('gateInput');
+    var val = input.value.trim().toLowerCase();
+    if(val === GATE_CODE){
+      try{ localStorage.setItem('marioGateUnlocked','1'); }catch(e){}
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('hub').style.display = 'block';
+      window.scrollTo(0,0);
+    } else {
+      document.getElementById('gateError').style.display = 'block';
+      input.value = '';
+    }
+  }
+
+  function showPage(id){
+    document.getElementById('hub').style.display = 'none';
+    document.querySelectorAll('.app-page').forEach(function(el){ el.style.display = 'none'; });
+    document.getElementById(id).style.display = 'block';
+    window.scrollTo(0,0);
+  }
+
+  function showHub(){
+    document.querySelectorAll('.app-page').forEach(function(el){ el.style.display = 'none'; });
+    document.getElementById('hub').style.display = 'block';
+    window.scrollTo(0,0);
+  }
+
+  (function(){
+    try{
+      if(localStorage.getItem('marioGateUnlocked') === '1'){
+        document.getElementById('gate').style.display = 'none';
+        document.getElementById('hub').style.display = 'block';
+      }
+    }catch(e){}
+  })();
+
+  document.querySelectorAll('.cl-ticks input[type="checkbox"]').forEach(function(cb){
+    var key = 'tick-' + cb.getAttribute('data-key');
+    try{
+      if(localStorage.getItem(key) === '1'){ cb.checked = true; }
+    }catch(e){}
+    cb.addEventListener('change', function(){
+      try{ localStorage.setItem(key, cb.checked ? '1' : '0'); }catch(e){}
+    });
+  });
+</script>
 
 </body>
 </html>
